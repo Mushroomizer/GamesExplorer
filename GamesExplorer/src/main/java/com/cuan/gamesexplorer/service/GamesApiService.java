@@ -22,15 +22,15 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class GamesApiService {
 
     @Value("${games.api.host}")
-    private String apiHost;
+    private String apiHost = "http://localhost:8080";
 
     @Value("${games.api.key}")
-    private String apiKey;
+    private String apiKey = "api_key_from_environment_variables";
 
     @Value("${games.api.threadpool.size:10}")
     private int threadPoolSize;
 
-    private ThreadPoolExecutor executor;
+    private ThreadPoolExecutor executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(10);
 
     private final RestTemplate restTemplate = new RestTemplate();
 
@@ -39,7 +39,8 @@ public class GamesApiService {
     @PostConstruct
     private void initialize(){
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-        interceptors.add(new GamesApiHttpRequestInterceptor(Map.of("X-RapidAPI-Key", apiKey, "X-RapidAPI-Host", apiHost)));
+        String apiHostHeader = apiHost.replaceAll("^(http|https)://", "");
+        interceptors.add(new GamesApiHttpRequestInterceptor(Map.of("X-RapidAPI-Key", apiKey, "X-RapidAPI-Host", apiHostHeader)));
         restTemplate.setInterceptors(interceptors);
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolSize);
     }
@@ -48,7 +49,7 @@ public class GamesApiService {
     public Future<List<Game>> getGamesList() {
         return executor.submit(() -> {
             try {
-                ResponseEntity<Game[]> gamesListResponse = restTemplate.getForEntity("https://" + apiHost + "/api/games", Game[].class);
+                ResponseEntity<Game[]> gamesListResponse = restTemplate.getForEntity(apiHost + "/api/games", Game[].class);
                 gamesListResponse.getStatusCode();
                 if (gamesListResponse.getStatusCode().isError()) {
                     //TODO: handle error
