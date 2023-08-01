@@ -3,8 +3,10 @@ package com.cuan.gamesexplorer.service;
 import com.cuan.gamesexplorer.httpinterceptor.GamesApiHttpRequestInterceptor;
 import com.cuan.gamesexplorer.model.Game;
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
+@Scope("singleton")
 public class GamesApiService {
+
+    private final Logger log = org.slf4j.LoggerFactory.getLogger(GamesApiService.class);
 
     @Value("${games.api.host}")
     private String apiHost = "http://localhost:8080";
@@ -39,7 +44,11 @@ public class GamesApiService {
     @PostConstruct
     private void initialize(){
         List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>();
-        String apiHostHeader = apiHost.replaceAll("^(http|https)://", "");
+        if(!apiHost.startsWith("http://") && !apiHost.startsWith("https://")) {
+            apiHost = "https://" + apiHost;
+        }
+        String apiHostHeader = apiHost;
+        apiHostHeader = apiHostHeader.replaceAll("^(http|https)://", "");
         interceptors.add(new GamesApiHttpRequestInterceptor(Map.of("X-RapidAPI-Key", apiKey, "X-RapidAPI-Host", apiHostHeader)));
         restTemplate.setInterceptors(interceptors);
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolSize);

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div th:switch="${games}">
+    <h2 th:case="null">No games</h2>
+    <div th:case="*">
+        <h2>Users</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Thumbnail</th>
+                <th>Title</th>
+                <th>Genre</th>
+                <th>Release Date</th>
+                <th>Platform</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="game : ${games}">
+                <td><img th:src="${game.getThumbnail()}"></td>
+                <td th:text="${game.getTitle()}"></td>
+                <td th:text="${game.getGenre()}"></td>
+                <td th:text="${game.getReleaseDate()}"></td>
+                <td th:text="${game.getPlatform()}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>
