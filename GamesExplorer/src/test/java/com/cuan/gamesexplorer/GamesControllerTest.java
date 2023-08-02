@@ -29,6 +29,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class GamesControllerTest {
 
+    static {
+        System.setProperty("GAMES_EXPLORER_HOST", "host");
+        System.setProperty("GAMES_EXPLORER_API_KEY", "key");
+    }
+
     private MockMvc mockMvc;
 
     @Mock

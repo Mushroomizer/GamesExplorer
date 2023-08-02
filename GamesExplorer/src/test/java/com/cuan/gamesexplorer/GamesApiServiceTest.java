@@ -1,4 +1,5 @@
 package com.cuan.gamesexplorer;
+
 import com.cuan.gamesexplorer.model.Game;
 import com.cuan.gamesexplorer.service.GamesApiService;
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -23,8 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(MockitoExtension.class)
 public class GamesApiServiceTest {
 
-    private static WireMockServer wireMockServer;
+    static {
+        System.setProperty("GAMES_EXPLORER_HOST", "host");
+        System.setProperty("GAMES_EXPLORER_API_KEY", "key");
+    }
 
+    private static WireMockServer wireMockServer;
     @InjectMocks
     private GamesApiService gamesApiService;
 
