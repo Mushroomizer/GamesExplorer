@@ -8,7 +8,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Controller
 public class ViewController {
@@ -21,14 +23,10 @@ public class ViewController {
     }
 
     @GetMapping("/")
-    public String showGamesList(Model model) {
-        try {
-            List<Game> res = gamesApiService.getGamesList().get(10, TimeUnit.SECONDS);
-            model.addAttribute("games", res);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.error("Error retrieving games list: {}", e.getMessage());
-        }
+    public String showGamesList(Model model) throws ExecutionException, InterruptedException, TimeoutException {
+        List<Game> res = gamesApiService.getGamesList().get(10, TimeUnit.SECONDS);
+        log.info("Retrieved [{}] games", res.size());
+        model.addAttribute("games", res);
         return "index";
     }
 }
