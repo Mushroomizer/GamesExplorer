@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 public class ApplicationConfiguration {
 
     @Bean
-    public ResponseEntity<?> httpSuccessMessage() {
-        return ResponseEntity.ok("Success! The request was processed successfully.");
+    public String SuccessMessage() {
+        return "Success! The request was processed successfully.";
     }
 }
