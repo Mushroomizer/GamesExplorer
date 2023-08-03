@@ -1,15 +1,13 @@
 package com.cuan.gamesexplorer.controller;
 
 import com.cuan.gamesexplorer.dtos.BaseResponseDto;
+import com.cuan.gamesexplorer.dtos.FilterRequestDto;
 import com.cuan.gamesexplorer.model.Game;
 import com.cuan.gamesexplorer.service.GamesApiService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -30,19 +28,23 @@ public class GamesController {
 
     // Get a full list of games
     @GetMapping("/list")
-    public ResponseEntity<?> getGamesList() {
+    public ResponseEntity<BaseResponseDto> getGamesList() {
         try {
             List<Game> res = gamesApiService.getGamesList().get(10, TimeUnit.SECONDS);
             return ResponseEntity.ok(new BaseResponseDto(successMessage, objectMapper.writeValueAsString(res)));
-        } catch (JsonProcessingException |InterruptedException | TimeoutException | ExecutionException e) {
+        } catch (JsonProcessingException | InterruptedException | TimeoutException | ExecutionException e) {
             return ResponseEntity.internalServerError().body(new BaseResponseDto(e.getMessage(), null));
         }
     }
 
-    // Filter games based on some keyValues - json input
     @PostMapping("/filter")
-    public ResponseEntity<?> filterGames() {
-        //TODO: implement this
-        return ResponseEntity.ok(successMessage);
+    public ResponseEntity<BaseResponseDto> filterGames(@RequestBody FilterRequestDto filterRequestDto) {
+        try {
+            List<Game> res = gamesApiService.getGamesList().get(10, TimeUnit.SECONDS);
+            Game[] filteredGames = filterRequestDto.ApplyFilter(res.toArray(new Game[0]));
+            return ResponseEntity.ok(new BaseResponseDto(successMessage, objectMapper.writeValueAsString(filteredGames)));
+        } catch (JsonProcessingException | InterruptedException | TimeoutException | ExecutionException e) {
+            return ResponseEntity.internalServerError().body(new BaseResponseDto(e.getMessage(), null));
+        }
     }
 }

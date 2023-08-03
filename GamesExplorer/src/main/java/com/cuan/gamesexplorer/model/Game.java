@@ -10,7 +10,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Game{
-    private long id;
+    // Set default value to -1 to avoid searching for games with id = 0 if not set
+    private long id = -1;
     private String title;
     private String thumbnail;
     private String shortDescription;
