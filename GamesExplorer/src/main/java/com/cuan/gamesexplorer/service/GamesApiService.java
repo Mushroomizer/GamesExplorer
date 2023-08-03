@@ -4,6 +4,7 @@ import com.cuan.gamesexplorer.httpinterceptor.GamesApiHttpRequestInterceptor;
 import com.cuan.gamesexplorer.model.Game;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -19,6 +20,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
+@CacheConfig(cacheNames = "games")
 public class GamesApiService {
 
     @Value("${games.api.host}")
@@ -44,7 +46,7 @@ public class GamesApiService {
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolSize);
     }
 
-    @Cacheable("games")
+    @Cacheable
     public Future<List<Game>> getGamesList() {
         return executor.submit(() -> {
             try {
