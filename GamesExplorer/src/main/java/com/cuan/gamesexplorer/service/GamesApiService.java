@@ -4,6 +4,7 @@ import com.cuan.gamesexplorer.httpinterceptor.GamesApiHttpRequestInterceptor;
 import com.cuan.gamesexplorer.model.Game;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class GamesApiService {
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolSize);
     }
 
+    @Cacheable("games")
     public Future<List<Game>> getGamesList() {
         return executor.submit(() -> {
             try {
