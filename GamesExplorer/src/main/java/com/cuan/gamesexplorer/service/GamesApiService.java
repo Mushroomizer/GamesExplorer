@@ -5,6 +5,7 @@ import com.cuan.gamesexplorer.model.Game;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Scope;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Service
 @Scope("singleton")
+@CacheConfig(cacheNames = "games")
 public class GamesApiService {
 
     private final Logger log = org.slf4j.LoggerFactory.getLogger(GamesApiService.class);
@@ -54,7 +56,7 @@ public class GamesApiService {
         executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(threadPoolSize);
     }
 
-    @Cacheable("games")
+    @Cacheable
     public Future<List<Game>> getGamesList() {
         return executor.submit(() -> {
             try {
